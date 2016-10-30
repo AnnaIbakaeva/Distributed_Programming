@@ -1,38 +1,37 @@
 import rpyc
 import time
+from copy import deepcopy
 
-class ChatClient(object):
+
+class Client(object):
     def __init__(self):
+        # init values
         self.conn = None
         self.user = None
         self.name = "Ann"
-        self.pi = 0
-        self.received_pi = 0
-        self.rank = 1
-        self.n = 10000
-        self.size = 2
+        self.iterationsCount = 0
+        self.iterations_size = 10
+        self.active_clients_count = 0
+        self.start = False
+
+        self.my_pi = []
+
+        self.received_pi = []
         self.result_pi = 0
         self.messages_counter = 0
 
+        self.current_iteration = 0
+
         self.on_connect()
 
-        for i in range(self.rank, self.n, self.size):
-            # print("")
-            # print("My pi = ",self.pi)
-            self.pi += pow(-1, i) / (2 * i + 1)
-            self.on_send()
+        self.size = self.user.get_clients_count()
+        self.rank = self.user.get_rank()
 
-        self.result_pi = self.pi + self.received_pi
-        print("Result pi = ", self.result_pi * 4)
+        # self.update_iterations(100000)
+        self.current_iteration = self.rank
 
-        count = self.n / self.size
-
-        while self.messages_counter < count:
-            time.sleep(10)
-
-        print(self.messages_counter, " = ", count)
-        self.on_close()
-
+        while not self.start:
+            print("Wait iterations")
 
     def disconnect(self):
         if self.conn:
@@ -58,54 +57,106 @@ class ChatClient(object):
             print("")
             self.conn = None
             return
-
         try:
-            self.user = self.conn.root.login(self.name, self.on_message)
+            self.user = self.conn.root.login(self.name, self.on_received, self.update_data)
         except ValueError:
             self.conn.close()
             self.conn = None
             return
 
+    def calculate_pi(self):
+        j = 0
+        pi = 0
+        for i in range(self.current_iteration, self.iterationsCount, self.size):
+            print("i = ", i)
+            pi += pow(-1, i) / (2 * i + 1)
+            j += 1
+            if j == self.iterations_size:
+                break
+        self.my_pi.append(pi)
+        self.current_iteration += self.size * j
 
-    #
-    # called by the reactor whenever the connection has something to say
-    #
-    def bg_server(self, source = None, cond = None):
-        if self.conn:
-            self.conn.poll_all()
-            return True
-        else:
-            return False
-
-    #
-    # sends the current message
-    #
     def on_send(self):
-        text = self.pi
-        print("")
+        text = self.my_pi[len(self.my_pi)-1]
         print("Send ", text)
-        self.user.say(text)
+        self.user.send_pi(text)
 
-    #
-    # called by the server, with the text to append to the GUI
-    def on_message(self, text):
+    def on_received(self, text):
         mes = text.split(' ')
         name = "[" + self.name + "]"
         if mes[0] == name:
             return
-        print("")
         print ("Received: ", text)
-        # print("My received pi = ", self.received_pi)
-        self.received_pi = float(mes[1])
-        # print("I summed receiving pi ", self.received_pi)
-        self.result_pi = self.pi + self.received_pi
-        # print("Result pi after receiving = ", self.result_pi * 4)
-        self.messages_counter += 1
-        print("Messages counter = ", self.messages_counter)
+        self.received_pi.append(float(mes[1]))
 
+    def update_iterations(self, unsolved):
+        if unsolved < 0:
+            self.iterationsCount = 0
+            self.user.update_data(self.iterationsCount, self.iterations_size, self.current_iteration)
+            return
+
+        print("")
+        print("Unsolved = ", unsolved)
+
+        last_active_clients_count = self.user.get_active_clients_count()
+
+        if not (self.active_clients_count == last_active_clients_count):
+            self.active_clients_count = last_active_clients_count
+            deltaIteration = int (unsolved / self.active_clients_count)
+            self.iterationsCount = deltaIteration
+            print("Iterations count = ", self.iterationsCount)
+        else:
+            self.iterationsCount = unsolved
+
+        self.user.update_data(self.iterationsCount, self.iterations_size, self.current_iteration)
+
+        self.size = last_active_clients_count
+        self.rank = self.user.get_rank()
+
+    def update_data(self, iterCount, iterSize, currentIteration):
+        print("")
+        print("I update my data ", iterCount, iterSize)
+
+        self.iterationsCount = iterCount
+        self.iterations_size = iterSize
+        self.current_iteration = currentIteration
+
+        self.start_calculation()
+
+    def start_calculation(self):
+        if self.start:
+            return
+
+        print("Start calculation")
+        self.start = True
+
+        # self.active_clients_count = self.user.get_active_clients_count()
+
+        while deepcopy(self.iterationsCount) > 0:
+            self.calculate_pi()
+            self.update_iterations(deepcopy(self.iterationsCount) - self.iterations_size)
+            self.on_send()
+
+        for pi in self.my_pi:
+            self.result_pi += pi
+
+        print("My pi = ", self.result_pi)
+
+        received_pi = 0
+        for pi in self.received_pi:
+            received_pi += pi
+
+        print("Received pi = ", received_pi)
+
+        self.result_pi += received_pi
+
+        print("Result pi = ", self.result_pi)
+        print("Result 4*pi = ", self.result_pi*4)
+
+        self.on_close()
 
 if __name__ == "__main__":
-    cc = ChatClient()
+    cc = Client()
 
 
 
