@@ -5,15 +5,15 @@ from threading import RLock
 
 # broadcast_lock = RLock()
 clients = set()
-unsolved_iterations = 0
 
 
 class ClientToken(object):
-    def __init__(self, name, send_pi, update_data):
+    def __init__(self, name, send_pi, update_data, kill_input):
         self.name = name
         self.state = False
         self.callback_send_pi = send_pi
         self.callback_update_data = update_data
+        self.callback_kill_input = kill_input
         print("* Hello %s *" % (self.name))
         self.count = 0
         clients.add(self)
@@ -34,6 +34,9 @@ class ClientToken(object):
             raise ValueError("User token is stale")
         self.broadcast_update_data(iterCount, iterSize, curIter)
 
+    def exposed_kill_other_user_input(self):
+        self.broadcast_kill_input()
+
     def exposed_logout(self):
         if self.state:
             return
@@ -48,13 +51,10 @@ class ClientToken(object):
             try:
                 client.callback_send_pi(text)
                 # print("I send ", text, " to ", client.name, " count = ", self.count)
-                self.count += 1
             except:
                 print("EXCEPTION broadcast")
 
     def broadcast_update_data(self, iterCount, iterSize, curIter):
-        # copy_clients = clients.copy()
-        # print("broadcast_update_data")
         for client in clients:
             try:
                 client.callback_update_data(iterCount, iterSize, curIter)
@@ -62,6 +62,14 @@ class ClientToken(object):
                 # self.count += 1
             except:
                 print("EXCEPTION broadcast_update_data")
+
+    def broadcast_kill_input(self):
+        for client in clients:
+            try:
+                client.callback_kill_input()
+                # print("I send ", text, " to ", client.name, " count = ", self.count)
+            except:
+                print("EXCEPTION broadcast_kill_input")
 
     def exposed_get_clients_count(self):
         return len(clients)
@@ -90,11 +98,11 @@ class RegisterService(Service):
         if self.client:
             self.client.exposed_logout()
 
-    def exposed_login(self, username, send_pi, update_data):
+    def exposed_login(self, username, send_pi, update_data, kill_data):
         if self.client and not self.client.state:
             raise ValueError("already logged in")
         else:
-            self.client = ClientToken(username, async(send_pi), async(update_data))
+            self.client = ClientToken(username, async(send_pi), async(update_data), async(kill_data))
             return self.client
 
 
