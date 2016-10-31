@@ -3,14 +3,14 @@ import time
 from copy import deepcopy
 import threading
 
-user_iterations = 0
+
 class Client(object):
 
     def __init__(self):
         # init values
         self.conn = None
         self.user = None
-        self.name = "Kate"
+        self.name = "Ann"
         self.iterationsCount = 0
         self.iterations_size = 10
         self.active_clients_count = 0
@@ -29,12 +29,15 @@ class Client(object):
         self.t1 = threading.Thread(target=self.user_input)
         self.t1.start()
 
+        if (self.iterationsCount > 0):
+            self.t1.join()
+
         self.t2 = threading.Thread(target=self.cycle)
         self.t2.start()
 
         self.t2.join()
 
-        self.update_iterations(user_iterations)
+        self.update_iterations(self.iterationsCount)
         self.current_iteration = self.rank
 
         self.start()
@@ -73,14 +76,13 @@ class Client(object):
             return
 
     def user_input(self):
-        global user_iterations
-        user_iterations = int(input("Please, type the iterations count: "))
+        self.iterationsCount = int(input("Please, type the iterations count: "))
         self.user.kill_other_user_input()
         print("I am worked")
 
     def cycle(self):
-        global user_iterations
-        while user_iterations == 0:
+        while self.iterationsCount == 0:
+            print("self.iterationsCount = ", self.iterationsCount)
             time.sleep(1)
         print("Cycle end!")
 
@@ -160,11 +162,7 @@ class Client(object):
         self.rank = self.user.get_rank()
 
     def update_data(self, iterCount, iterSize, currentIteration):
-
-        global user_iterations
-        user_iterations = iterCount
-
-        if (self.t1.isAlive):
+        if self.t1.isAlive:
             self.t1.join()
 
         print("")
