@@ -7,10 +7,12 @@ class Client(object):
         self.conn = None
         self.user = None
         self.name = "Ann"
-        self.iterationsCount = 10000
+        self.iterationsCount = 100000
         self.iterations_size = 10
         self.active_clients_count = 0
         self.isStart = False
+        self.step = 0
+        self.other_last_iteration = 0
 
         self.my_pi = []
 
@@ -86,14 +88,14 @@ class Client(object):
     def calculate_pi(self):
         j = 0
         pi = 0
-        for i in range(self.current_iteration, self.iterationsCount, self.size):
+        for i in range(self.current_iteration, self.iterationsCount, self.step):
             print("i = ", i)
             pi += pow(-1, i) / (2 * i + 1)
             j += 1
             if j == self.iterations_size:
                 break
         self.my_pi.append(pi)
-        self.current_iteration += self.size * j
+        self.current_iteration += self.step * j
 
     def on_send(self):
         send_pi = 0
@@ -101,13 +103,14 @@ class Client(object):
             send_pi += p
         print("Last temp pi = ", self.my_pi[len(self.my_pi)-1])
         print("Send ", send_pi)
-        self.user.send_pi(send_pi)
+        self.user.send_pi(send_pi, self.current_iteration)
 
-    def on_received(self, name, pi):
+    def on_received(self, name, pi, other_last_iteration):
         if self.name == name:
             return
         print("I received ", pi)
         self.received_pi = float(pi)
+        self.other_last_iteration = other_last_iteration
 
     def update_iterations(self, unsolved):
         print("")
@@ -115,13 +118,20 @@ class Client(object):
 
         last_active_clients_count = self.user.get_active_clients_count()
 
+        self.size = last_active_clients_count
+        self.rank = self.user.get_rank()
+
         if not (self.active_clients_count == last_active_clients_count):
             self.active_clients_count = last_active_clients_count
             print("Iterations count = ", self.iterationsCount)
             self.user.update_data(self.iterationsCount, self.iterations_size, self.current_iteration)
+            if self.other_last_iteration < self.current_iteration or self.step == 0:
+                self.step = self.size
+        else:
+            self.step = self.size
 
-        self.size = last_active_clients_count
-        self.rank = self.user.get_rank()
+
+
 
     def update_data(self, name, iterCount, iterSize, currentIteration):
         if self.name == name:
@@ -139,6 +149,7 @@ class Client(object):
 
         self.size = self.user.get_active_clients_count()
         self.rank = self.user.get_rank()
+        self.step = self.size
 
         print("Rank = ", self.rank)
         self.current_iteration = currentIteration + self.rank
