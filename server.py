@@ -1,9 +1,8 @@
 from __future__ import with_statement
 from rpyc import Service, async
 from rpyc.utils.server import ThreadedServer
-from threading import RLock
 
-# broadcast_lock = RLock()
+
 clients = []
 
 
@@ -25,10 +24,9 @@ class ClientToken(object):
     def exposed_send_pi(self, message):
         if self.state:
             raise ValueError("User token is stale")
-        self.broadcast("[%s] %s" % (self.name, message))
+        self.broadcast_send_pi("[%s] %s" % (self.name, message))
 
     def exposed_update_data(self, iterCount, iterSize, curIter):
-        # print("exposed_update_data")
         if self.state:
             raise ValueError("User token is stale")
         self.broadcast_update_data(iterCount, iterSize, curIter)
@@ -42,11 +40,10 @@ class ClientToken(object):
         clients.remove(self)
         print("* Goodbye %s *" % (self.name,))
 
-    def broadcast(self, text):
+    def broadcast_send_pi(self, text):
         for client in clients:
             try:
                 client.callback_send_pi(text)
-                # print("I send ", text, " to ", client.name, " count = ", self.count)
             except:
                 print("EXCEPTION broadcast")
 
@@ -58,9 +55,6 @@ class ClientToken(object):
                 # self.count += 1
             except:
                 print("EXCEPTION broadcast_update_data")
-
-    def exposed_get_clients_count(self):
-        return len(clients)
 
     def exposed_get_active_clients_count(self):
         count = 0
