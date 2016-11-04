@@ -52,6 +52,7 @@ class ClientToken(object):
     def broadcast_update_data(self, iterCount, iterSize, curIter):
         for client in clients:
             try:
+                print("broadcast_update_data")
                 client.callback_update_data(iterCount, iterSize, curIter)
                 # print("I send ", text, " to ", client.name, " count = ", self.count)
                 # self.count += 1
@@ -79,6 +80,7 @@ class ClientToken(object):
 
 class RegisterService(Service):
     def on_connect(self):
+        print("On connect")
         self.client = None
 
     def on_disconnect(self):
@@ -102,6 +104,6 @@ class RegisterService(Service):
 
 
 if __name__ == "__main__":
-    t = ThreadedServer(RegisterService, port = 19912)
+    t = ThreadedServer(RegisterService, port=19912)
     t.start()
 

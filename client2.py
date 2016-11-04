@@ -10,32 +10,21 @@ class Client(object):
         # init values
         self.conn = None
         self.user = None
-        self.name = "Ann"
-        self.iterationsCount = 0
+        self.name = "Kate"
+        self.iterationsCount = 10000
         self.iterations_size = 10
         self.active_clients_count = 0
         self.isStart = False
 
         self.my_pi = []
 
-        self.received_pi = []
+        self.received_pi = 0
         self.result_pi = 0
         self.messages_counter = 0
 
         self.current_iteration = 0
 
         self.on_connect()
-
-        self.t1 = threading.Thread(target=self.user_input)
-        self.t1.start()
-
-        if (self.iterationsCount > 0):
-            self.t1.join()
-
-        self.t2 = threading.Thread(target=self.cycle)
-        self.t2.start()
-
-        self.t2.join()
 
         self.update_iterations(self.iterationsCount)
         self.current_iteration = self.rank
@@ -69,22 +58,11 @@ class Client(object):
             self.conn = None
             return
         try:
-            self.user = self.conn.root.login(self.name, self.on_received, self.update_data, self.kill_user_input)
+            self.user = self.conn.root.login(self.name, self.on_received, self.update_data)
         except ValueError:
             self.conn.close()
             self.conn = None
             return
-
-    def user_input(self):
-        self.iterationsCount = int(input("Please, type the iterations count: "))
-        self.user.kill_other_user_input()
-        print("I am worked")
-
-    def cycle(self):
-        while self.iterationsCount == 0:
-            print("self.iterationsCount = ", self.iterationsCount)
-            time.sleep(1)
-        print("Cycle end!")
 
     def start(self):
         if self.isStart:
@@ -93,9 +71,9 @@ class Client(object):
 
         print("I am start!")
 
-        while deepcopy(self.iterationsCount) > 0:
+        while deepcopy(self.iterationsCount) - deepcopy(self.current_iteration) > 0:
             self.calculate_pi()
-            self.update_iterations(deepcopy(self.iterationsCount) - self.iterations_size)
+            self.update_iterations(deepcopy(self.iterationsCount) - deepcopy(self.current_iteration))
             self.on_send()
         self.end()
 
@@ -104,12 +82,9 @@ class Client(object):
             self.result_pi += pi
         print("My pi = ", self.result_pi)
 
-        received_pi = 0
-        for pi in self.received_pi:
-            received_pi += pi
-        print("Received pi = ", received_pi)
+        print("Received pi = ", self.received_pi)
 
-        self.result_pi += received_pi
+        self.result_pi += self.received_pi
         print("Result pi = ", self.result_pi)
         print("Result 4*pi = ", self.result_pi*4)
 
@@ -126,22 +101,26 @@ class Client(object):
         self.current_iteration += self.size * j
 
     def on_send(self):
-        text = self.my_pi[len(self.my_pi)-1]
-        print("Send ", text)
-        self.user.send_pi(text)
+        send_pi = 0
+        for p in self.my_pi:
+            send_pi += p
+        # text = self.my_pi[len(self.my_pi)-1]
+        print("Last temp pi = ", self.my_pi[len(self.my_pi)-1])
+        print("Send ", send_pi)
+        self.user.send_pi(send_pi)
 
     def on_received(self, text):
         mes = text.split(' ')
         name = "[" + self.name + "]"
         if mes[0] == name:
             return
-        self.received_pi.append(float(mes[1]))
+        self.received_pi = float(mes[1])
 
     def update_iterations(self, unsolved):
-        if unsolved < 0:
-            self.iterationsCount = 0
-            self.user.update_data(self.iterationsCount, self.iterations_size, self.current_iteration)
-            return
+        # if unsolved < 0:
+            # self.iterationsCount = 0
+            # self.user.update_data(self.iterationsCount, self.iterations_size, self.current_iteration)
+            # return
 
         print("")
         print("Unsolved = ", unsolved)
@@ -151,36 +130,40 @@ class Client(object):
         if not (self.active_clients_count == last_active_clients_count):
             self.active_clients_count = last_active_clients_count
             delta_iteration = int (unsolved / self.active_clients_count)
-            self.iterationsCount = delta_iteration
+            # self.iterationsCount = delta_iteration + self.current_iteration
             print("Iterations count = ", self.iterationsCount)
-        else:
-            self.iterationsCount = unsolved
+            self.user.update_data(self.iterationsCount, self.iterations_size, self.current_iteration)
+        # else:
+        #     pass
+            # self.iterationsCount = unsolved
 
-        self.user.update_data(self.iterationsCount, self.iterations_size, self.current_iteration)
+
 
         self.size = last_active_clients_count
         self.rank = self.user.get_rank()
 
-    def update_data(self, iterCount, iterSize, currentIteration):
-        if self.t1.isAlive:
-            self.t1.join()
+    def update_data(self, name, iterCount, iterSize, currentIteration):
+        if self.name == name:
+            return
+
+        if currentIteration < self.current_iteration:
+            print(" I AM NOT WILL UPDATE MY DATA!!!!")
+            return
 
         print("")
         print("I update my data ", iterCount, iterSize, currentIteration)
 
         self.iterationsCount = iterCount
         self.iterations_size = iterSize
-        self.current_iteration = currentIteration
 
         self.size = self.user.get_clients_count()
         self.rank = self.user.get_rank()
 
-        self.start()
+        print("Rank = ", self.rank)
+        self.current_iteration = currentIteration + self.rank
 
-    def kill_user_input(self):
-        if self.t1.isAlive:
-            print("I kill t1")
-            self.t1.join()
+
+        self.start()
 
 if __name__ == "__main__":
     cc = Client()
