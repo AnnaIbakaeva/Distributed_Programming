@@ -21,10 +21,10 @@ class ClientToken(object):
         for c in clients:
             print(c.name)
 
-    def exposed_send_pi(self, message, calc_iters):
+    def exposed_send_pi(self, message):
         if self.state:
             raise ValueError("User token is stale")
-        self.broadcast_send_pi("[%s] %s" % (self.name, message), calc_iters)
+        self.broadcast_send_pi(self.name, message)
 
     def exposed_update_data(self, iterCount, iterSize, curIter):
         if self.state:
@@ -40,10 +40,10 @@ class ClientToken(object):
         clients.remove(self)
         print("* Goodbye %s *" % (self.name,))
 
-    def broadcast_send_pi(self, text, calc_iters):
+    def broadcast_send_pi(self, name, pi):
         for client in clients:
             try:
-                client.callback_send_pi(text, calc_iters)
+                client.callback_send_pi(name, pi)
             except:
                 print("EXCEPTION broadcast")
 

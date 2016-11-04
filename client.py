@@ -11,7 +11,6 @@ class Client(object):
         self.iterations_size = 10
         self.active_clients_count = 0
         self.isStart = False
-        self.calculated_iterations = []
 
         self.my_pi = []
 
@@ -88,11 +87,8 @@ class Client(object):
         j = 0
         pi = 0
         for i in range(self.current_iteration, self.iterationsCount, self.size):
-            if i in self.calculated_iterations:
-                continue
             print("i = ", i)
             pi += pow(-1, i) / (2 * i + 1)
-            self.calculated_iterations.append(i)
             j += 1
             if j == self.iterations_size:
                 break
@@ -105,21 +101,13 @@ class Client(object):
             send_pi += p
         print("Last temp pi = ", self.my_pi[len(self.my_pi)-1])
         print("Send ", send_pi)
-        self.user.send_pi(send_pi, self.calculated_iterations)
+        self.user.send_pi(send_pi)
 
-    def on_received(self, text, calc_iters):
-        mes = text.split(' ')
-        name = "[" + self.name + "]"
-        if mes[0] == name:
+    def on_received(self, name, pi):
+        if self.name == name:
             return
-        print("I received ", float(mes[1]), "; last received calc iters = ", calc_iters)
-        self.received_pi = float(mes[1])
-        self.calculated_iterations.extend(calc_iters)
-        # print("")
-        # print("self.calculated_iterations:")
-        # for i in self.calculated_iterations:
-        #     print(i, " ")
-        # print("")
+        print("I received ", pi)
+        self.received_pi = float(pi)
 
     def update_iterations(self, unsolved):
         print("")
