@@ -11,6 +11,7 @@ class Client(object):
         self.iterations_size = 10
         self.active_clients_count = 0
         self.isStart = False
+        self.calculated_iterations = []
 
         self.my_pi = []
 
@@ -21,11 +22,7 @@ class Client(object):
 
         self.update_iterations(self.iterationsCount)
         if self.current_iteration == 0:
-            print("")
-            print("self.current_iteration = 0")
             self.current_iteration = self.rank
-            print("self.current_iteration = ", self.current_iteration)
-            print("")
 
         self.start()
 
@@ -91,8 +88,11 @@ class Client(object):
         j = 0
         pi = 0
         for i in range(self.current_iteration, self.iterationsCount, self.size):
+            if i in self.calculated_iterations:
+                continue
             print("i = ", i)
             pi += pow(-1, i) / (2 * i + 1)
+            self.calculated_iterations.append(i)
             j += 1
             if j == self.iterations_size:
                 break
@@ -105,15 +105,21 @@ class Client(object):
             send_pi += p
         print("Last temp pi = ", self.my_pi[len(self.my_pi)-1])
         print("Send ", send_pi)
-        self.user.send_pi(send_pi)
+        self.user.send_pi(send_pi, self.calculated_iterations)
 
-    def on_received(self, text):
+    def on_received(self, text, calc_iters):
         mes = text.split(' ')
         name = "[" + self.name + "]"
         if mes[0] == name:
             return
-        print("I received ", float(mes[1]))
+        print("I received ", float(mes[1]), "; last received calc iters = ", calc_iters)
         self.received_pi = float(mes[1])
+        self.calculated_iterations.extend(calc_iters)
+        # print("")
+        # print("self.calculated_iterations:")
+        # for i in self.calculated_iterations:
+        #     print(i, " ")
+        # print("")
 
     def update_iterations(self, unsolved):
         print("")
@@ -123,13 +129,8 @@ class Client(object):
 
         if not (self.active_clients_count == last_active_clients_count):
             self.active_clients_count = last_active_clients_count
-            # delta_iteration = int (unsolved / self.active_clients_count)
-            # self.iterationsCount = delta_iteration + self.current_iteration
             print("Iterations count = ", self.iterationsCount)
             self.user.update_data(self.iterationsCount, self.iterations_size, self.current_iteration)
-        # else:
-        #     pass
-            # self.iterationsCount = unsolved
 
         self.size = last_active_clients_count
         self.rank = self.user.get_rank()
@@ -153,7 +154,6 @@ class Client(object):
 
         print("Rank = ", self.rank)
         self.current_iteration = currentIteration + self.rank
-        print("self.current_iteration = currentIteration + self.rank ", self.current_iteration)
 
         self.start()
 
