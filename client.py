@@ -13,6 +13,7 @@ class Client(object):
         self.isStart = False
         self.step = 0
         self.other_last_iteration = 0
+        self.clients_count_changed = 0
 
         self.my_pi = []
 
@@ -128,11 +129,18 @@ class Client(object):
         self.rank = self.user.get_rank()
 
         if not (self.active_clients_count == last_active_clients_count):
+            self.clients_count_changed = self.active_clients_count
             self.active_clients_count = last_active_clients_count
             print("Iterations count = ", self.iterationsCount)
             self.user.update_data(self.iterationsCount, self.iterations_size, self.current_iteration)
 
-        if self.other_last_iteration < self.current_iteration or self.step == 0:
+        print("\nother_last_iteration = ", self.other_last_iteration)
+        print("current_iteration = ", self.current_iteration)
+
+        if self.clients_count_changed > 0 and abs(self.other_last_iteration - self.current_iteration) < self.clients_count_changed:
+            self.step = self.size
+            self.clients_count_changed = 0
+        elif self.other_last_iteration < self.current_iteration or self.step == 0:
                 self.step = self.size
                 print("")
                 print("self.step = self.size ", self.step)
