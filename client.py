@@ -3,6 +3,7 @@ from copy import deepcopy
 import time
 from math import ceil, fmod
 
+
 class Client(object):
     def __init__(self):
         self.conn = None
@@ -148,17 +149,16 @@ class Client(object):
                 self.step = self.size
             elif delta >= self.clients_count_changed:
                 if self.active_clients_count < self.clients_count_changed:
-                    missed = ceil(delta / (self.iterations_size * self.step))
+                    missed = round(delta / (self.iterations_size * self.step))
                     for i in range(0, missed):
                         self.my_pi.pop()
                     print("\n I removed ", missed, " pi values")
                     print("Now my last pi = ", self.my_pi[len(self.my_pi) - 1], "\n")
-                    offset = self.get_other_rank(deepcopy(self.other_last_iteration))
-                    self.current_iteration = self.other_last_iteration - offset
+                    # offset = self.get_other_rank(deepcopy(self.other_last_iteration))
 
                 self.clients_count_changed = 0
                 self.step = self.size
-
+                self.current_iteration = min(self.other_last_iteration, self.current_iteration)
 
         elif self.other_last_iteration < self.current_iteration or self.step == 0:
                 self.step = self.size
