@@ -1,7 +1,7 @@
 import rpyc
 from copy import deepcopy
 import time
-from math import ceil
+from math import ceil, fmod
 
 class Client(object):
     def __init__(self):
@@ -142,7 +142,7 @@ class Client(object):
             delta = self.current_iteration - self.other_last_iteration
             print("delta = ", delta)
 
-            if abs(delta) < self.step * self.iterations_size:
+            if abs(delta) < self.iterations_size:
                 print("abs(delta) < self.clients_count_changed")
                 self.clients_count_changed = 0
                 self.step = self.size
@@ -153,7 +153,8 @@ class Client(object):
                         self.my_pi.pop()
                     print("\n I removed ", missed, " pi values")
                     print("Now my last pi = ", self.my_pi[len(self.my_pi) - 1], "\n")
-                    self.current_iteration = self.other_last_iteration
+                    offset = self.get_other_rank(deepcopy(self.other_last_iteration))
+                    self.current_iteration = self.other_last_iteration - offset
 
                 self.clients_count_changed = 0
                 self.step = self.size
@@ -194,6 +195,12 @@ class Client(object):
         self.current_iteration = currentIteration + self.rank
 
         self.start()
+
+    def get_other_rank(self, iterations):
+        for possible_rank in range(0, self.step):
+            if fmod((iterations - possible_rank), self.step) == 0:
+                return possible_rank
+        return 0
 
 if __name__ == "__main__":
     cc = Client()
