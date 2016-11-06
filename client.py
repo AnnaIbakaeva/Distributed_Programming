@@ -1,7 +1,7 @@
 import rpyc
 from copy import deepcopy
 import time
-
+from math import ceil
 
 class Client(object):
     def __init__(self):
@@ -137,9 +137,28 @@ class Client(object):
         print("\nother_last_iteration = ", self.other_last_iteration)
         print("current_iteration = ", self.current_iteration)
 
-        if self.clients_count_changed > 0 and abs(self.other_last_iteration - self.current_iteration) < self.clients_count_changed:
-            self.step = self.size
-            self.clients_count_changed = 0
+        if self.clients_count_changed > 0:
+            print("\nself.clients_count_changed > 0")
+            delta = self.current_iteration - self.other_last_iteration
+            print("delta = ", delta)
+
+            if abs(delta) < self.step * self.iterations_size:
+                print("abs(delta) < self.clients_count_changed")
+                self.clients_count_changed = 0
+                self.step = self.size
+            elif delta >= self.clients_count_changed:
+                if self.active_clients_count < self.clients_count_changed:
+                    missed = ceil(delta / (self.iterations_size * self.step))
+                    for i in range(0, missed):
+                        self.my_pi.pop()
+                    print("\n I removed ", missed, " pi values")
+                    print("Now my last pi = ", self.my_pi[len(self.my_pi) - 1], "\n")
+                    self.current_iteration = self.other_last_iteration
+
+                self.clients_count_changed = 0
+                self.step = self.size
+
+
         elif self.other_last_iteration < self.current_iteration or self.step == 0:
                 self.step = self.size
                 print("")

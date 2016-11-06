@@ -89,6 +89,6 @@ class RegisterService(Service):
 
 
 if __name__ == "__main__":
-    t = ThreadedServer(RegisterService, port=19912)
+    t = ThreadedServer(RegisterService, port=19913)
     t.start()
 
