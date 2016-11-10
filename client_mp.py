@@ -10,6 +10,8 @@ class Client(object):
 		
 		self.update_data(infList, port)
 		
+		self.calculate(1000000 / 4, 10)
+		
 	def calculate(self, count, iterations):
 	    iterCount = iterations
         iterSize = count / iterCount
