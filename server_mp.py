@@ -9,7 +9,7 @@ clients = []
 class ClientToken(object):
     def __init__(self, name, send_pi, update_data):
         self.name = name
-        self.state = False
+        self.stale = False
         self.callback_send_pi = send_pi
         self.callback_update_data = update_data
         print("* Hello %s *" % (self.name))
@@ -22,23 +22,29 @@ class ClientToken(object):
             print(c.name)
 
     def exposed_send_pi(self, message, curIter):
-        if self.state:
+        if self.stale:
             raise ValueError("User token is stale")
         self.broadcast_send_pi(self.name, message, curIter)
 
     def exposed_update_data(self, iterCount, iterSize, curIter):
-        if self.state:
+        if self.stale:
             raise ValueError("User token is stale")
         self.broadcast_update_data(iterCount, iterSize, curIter)
 
     def exposed_logout(self):
-        if self.state:
+        if self.stale:
             return
-        self.state = True
+        self.stale = True
         self.callback_send_pi = None
         self.callback_update_data = None
-        clients.remove(self)
+        #clients.remove(self)
+		self.update_client_stale()
         print("* Goodbye %s *" % (self.name,))
+		
+	def update_client_stale(self):
+	    for c in clients:
+		    if c.name == self.name:
+			    c.stale = self.stale
 
     def broadcast_send_pi(self, name, pi, curIter):
         for client in clients:
@@ -59,7 +65,7 @@ class ClientToken(object):
     def exposed_get_active_clients_count(self):
         count = 0
         for client in clients:
-            if not client.state:
+            if not client.stale:
                 count += 1
         return count
 
@@ -81,7 +87,7 @@ class RegisterService(Service):
             self.client.exposed_logout()
 
     def exposed_login(self, username, send_pi, update_data):
-        if self.client and not self.client.state:
+        if self.client and not self.client.stale:
             raise ValueError("already logged in")
         else:
             self.client = ClientToken(username, async(send_pi), async(update_data))

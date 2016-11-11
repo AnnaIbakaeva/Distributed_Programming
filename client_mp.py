@@ -5,10 +5,14 @@ class Client(object):
     def __init__(self):
 	    self.current_my_value = 0
 		self.my_data = []
+		self.received_data = 0
 		self.iteration_size = 0
 		self.iterations_count = 0
+		self.name = "Kate"
+		self.other = None
+		self.conn = None
 		
-		self.update_data(infList, port)
+		self.on_connect()
 		
 		self.calculate(1000000 / 4, 10)
 		
@@ -46,6 +50,8 @@ class Client(object):
         result = 0
         for value in self.MyData:
 		    result += value;
+			
+		
 			
 		for information in self.Informations: 
             for value in information.RecievedData:
@@ -112,8 +118,59 @@ class Client(object):
 		
 		print("I got some task! Iteraions: " + count + " with size of: " + size)
 		
+	
 	def update_information(self, value):
+	    self.received_data = value
 	    GetInformation(address).RecievedData.Add(value);
+		
+	# Пересчитать нагрузку, которую будем считать
+	def update_iterations(self, unsolved):
+	    current_active_clients = self.get_active_clients_count()
+		delta = Math.Ceiling((float)unsolved / current_active_clients);
+		self.iterations_count += (int) delta
+		
+	def update_status(self, name):
+	    try:
+	        client = self.other_clients.index(name)			
+			client.has_connection = false
+			
+			unsolved = self.iterations_count - inf.RecievedData.Count;
+			self.update_iterations(unsolved)
+		except:
+		    print ("No client ", name)
+		    return
+
+		
+    def disconnect(self):
+        if self.conn:
+            try:
+                self.other.logout()
+            except:
+                print("Logout except")
+                pass
+            self.conn.close()
+            self.other = None
+            self.conn = None
+
+    def on_close(self):
+        print("I closed!")
+        self.disconnect()
+
+    def on_connect(self):
+        try:
+            self.conn = rpyc.connect("localhost", 19912)
+        except Exception:
+            print("")
+            print("EXCEPTION!!!")
+            print("")
+            self.conn = None
+            return
+        try:
+            self.other = self.conn.root.login(self.name, self.update_iterations)
+        except ValueError:
+            self.conn.close()
+            self.conn = None
+            return
 		
 #public Information GetInformation(string address)
  #           {
