@@ -127,7 +127,7 @@ class ClientToken(object):
             try:
                 if client.stale:
                     continue
-                if client.callback_get_wait().value:
+                if client.callback_get_wait():
                     count += 1
             except:
                 print("EXCEPTION broadcast_get_wait_me_clients_count ", client.name)
@@ -161,7 +161,7 @@ class RegisterService(Service):
             raise ValueError("already logged in")
         else:
             self.client = ClientToken(username, async(update_data), async(mass_start),
-                                      async(get_wait), async(update_information), async(get_received_data_count))
+                                      get_wait, async(update_information), async(get_received_data_count))
             return self.client
 
 

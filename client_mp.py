@@ -3,6 +3,7 @@ import rpyc
 from random import random
 from math import sqrt, ceil
 import threading
+import time
 
 
 class Client(object):
@@ -16,9 +17,10 @@ class Client(object):
         self.other = None
         self.conn = None
         self.wait_me = False
+        self.alreadyCalc = 0
 
         self.on_connect()
-        self.calculate(10000000 / 2, 10)
+        self.calculate(100000000 / 4, 10)
 
     def calculate(self, count, iterations):
         iterCount = iterations
@@ -37,19 +39,27 @@ class Client(object):
         print("\nResult pi = ", result)
 
     def get_result(self):
-        iterationsCount = self.iterations_count * 2 # сколько всего вычислений
-        alreadyCalc = self.is_all_over() # сколько уже сделано
+        iterationsCount = self.iterations_count * 4 # сколько всего вычислений
+        self.alreadyCalc = self.is_all_over() # сколько уже сделано
 
-        print("\nBefore while, iterationsCount = ", iterationsCount, " alreadyCalc = ", alreadyCalc)
-        while alreadyCalc < iterationsCount:
+        print("\nBefore while, iterationsCount = ", iterationsCount, " alreadyCalc = ", self.alreadyCalc)
+        while self.alreadyCalc < iterationsCount:
             # aviable = self.other.get_active_clients_count() # сколько активных учатсникв
             # clients = self.other.get_clients_count() # сколько всего должно быть
-            doing = alreadyCalc + self.other.get_wait_me_clients_count() # сколько сделано на данный момент задач + сколько делаются в данный момент
-            print("\ndoing ", doing)
+            w = self.other.get_wait_me_clients_count()
+            print("\nself.other.get_wait_me_clients_count() = ", w)
+            doing = self.alreadyCalc + w # сколько сделано на данный момент задач + сколько делаются в данный момент
+            print("doing ", doing)
             if doing < iterationsCount: #// ??? // Если ктото упал  // и при этом есть свободные итерации
                 self.next_step()  # берем итерацию и делаем
-            alreadyCalc = self.is_all_over() # обновляем общее значение сделанных итераций
-            print("alreadyCalc ", alreadyCalc)
+            else:
+                print("I end calculate")
+                break
+            self.alreadyCalc = self.is_all_over() # обновляем общее значение сделанных итераций
+            print("alreadyCalc ", self.alreadyCalc)
+
+        while self.other.get_wait_me_clients_count() > 0:
+            time.sleep(0.5)
 
         count = len(self.my_data)
         result = 0
@@ -67,7 +77,9 @@ class Client(object):
 
     def is_all_over(self):
         dataCount = len(self.my_data)
-        dataCount += self.other.get_received_data_count()
+        print("My data count = ", dataCount)
+        dataCount += self.get_received_data_count()
+        print("Sum data count = ", dataCount)
         return dataCount
 
     def get_received_data_count(self):
@@ -77,16 +89,16 @@ class Client(object):
     def next_step(self):
         # Сообщаем каждому, с кем есть связь, что мы считаем
         self.wait_me = True
-		
+
         self.make_iteration() #// Считаем один блок
         # рассылаем всем посчитаный блок
         print("self.other.update_information ", self.my_data[len(self.my_data) - 1])
         self.other.update_information(self.my_data[len(self.my_data) - 1])
         self.wait_me = False
-				
+
     def get_wait(self):
         return self.wait_me
-		
+
     def make_iteration(self):
         self.current_my_value = 0
         for i in range(0, int(self.iteration_size)):
@@ -102,11 +114,11 @@ class Client(object):
         x = random()
         y = random()
         z = sqrt(x*x + y*y)
-		
+
         if z <= 1:
             return 1
         return 0
-		
+
     def update_data(self, count, size):
         print("\nupdate_data ", count, size)
         self.my_data = []
@@ -119,6 +131,7 @@ class Client(object):
             return
         print("Update inforemation ", value)
         self.received_data.append(value)
+        self.alreadyCalc = self.is_all_over()
 
     def disconnect(self):
         if self.conn:

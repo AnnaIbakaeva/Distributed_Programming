@@ -13,7 +13,7 @@ class Client(object):
         self.received_data = []
         self.iteration_size = 0
         self.iterations_count = 0
-        self.name = "Ann"
+        self.name = "John"
         self.other = None
         self.conn = None
         self.wait_me = False
