@@ -32,7 +32,10 @@ class Client(object):
         self.mass_start()
 
     def mass_start(self):
-        self.main()
+        t1 = threading.Thread(target=self.main)
+        t1.start()
+        t1.join()
+        # self.main()
 
     def main(self):
         result = self.get_result()
@@ -44,16 +47,12 @@ class Client(object):
 
         print("\nBefore while, iterationsCount = ", iterationsCount, " alreadyCalc = ", self.alreadyCalc)
         while self.alreadyCalc < iterationsCount:
-            # aviable = self.other.get_active_clients_count() # сколько активных учатсникв
-            # clients = self.other.get_clients_count() # сколько всего должно быть
-            w = self.other.get_wait_me_clients_count()
-            print("\nself.other.get_wait_me_clients_count() = ", w)
-            doing = self.alreadyCalc + w # сколько сделано на данный момент задач + сколько делаются в данный момент
-            print("doing ", doing)
+            doing = self.alreadyCalc + self.other.get_wait_me_clients_count()# сколько сделано на данный момент задач + сколько делаются в данный момент
+            print("\ndoing ", doing)
             if doing < iterationsCount: #// ??? // Если ктото упал  // и при этом есть свободные итерации
                 self.next_step()  # берем итерацию и делаем
             else:
-                print("I end calculate")
+                print("\nI end calculate")
                 break
             self.alreadyCalc = self.is_all_over() # обновляем общее значение сделанных итераций
             print("alreadyCalc ", self.alreadyCalc)
@@ -91,9 +90,14 @@ class Client(object):
         self.wait_me = True
 
         self.make_iteration() #// Считаем один блок
-        # рассылаем всем посчитаный блок
-        print("self.other.update_information ", self.my_data[len(self.my_data) - 1])
-        self.other.update_information(self.my_data[len(self.my_data) - 1])
+
+        self.alreadyCalc = self.is_all_over()
+        if self.alreadyCalc < self.iterations_count * 4:
+            # рассылаем всем посчитаный блок
+            self.other.update_information(self.my_data[len(self.my_data) - 1])
+        else:
+            print("\nI not send the data!\n")
+            self.my_data.pop()
         self.wait_me = False
 
     def get_wait(self):
@@ -129,7 +133,7 @@ class Client(object):
     def update_information(self, name, value):
         if name == self.name:
             return
-        print("Update inforemation ", value)
+        print("\nUpdate inforemation ", value)
         self.received_data.append(value)
         self.alreadyCalc = self.is_all_over()
 
