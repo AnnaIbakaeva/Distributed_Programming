@@ -82,7 +82,7 @@ class ClientToken(object):
     def broadcast_update_information(self, value):
         for client in clients:
             try:
-                client.callback_update_information(value)
+                client.callback_update_information(client.name, value)
             except:
                 print("EXCEPTION broadcast_update_information ", client.name)
                 client.stale = True
@@ -92,14 +92,14 @@ class ClientToken(object):
         if self.stale:
             self.update_client_stale()
             raise ValueError("User token is stale ", self.name)
-        self.broadcast_get_received_data_count()
+        return self.broadcast_get_received_data_count()
 
     def broadcast_get_received_data_count(self):
         count = 0
         for client in clients:
             try:
-                count += client.callback_get_received_data_count()
-            except:
+                count += client.callback_get_received_data_count().value
+            except Exception:
                 print("EXCEPTION broadcast_get_received_data_count ", client.name)
                 client.stale = True
                 self.update_client_stale()
@@ -110,13 +110,13 @@ class ClientToken(object):
         if self.stale:
             self.update_client_stale()
             raise ValueError("User token is stale ", self.name)
-        self.broadcast_get_wait_me_clients_count()
+        return self.broadcast_get_wait_me_clients_count()
 
     def broadcast_get_wait_me_clients_count(self):
         count = 0
         for client in clients:
             try:
-                if not client.stale and client.callback_get_wait():
+                if not client.stale and client.callback_get_wait().value:
                     count += 1
             except:
                 print("EXCEPTION broadcast_get_wait_me_clients_count ", client.name)
