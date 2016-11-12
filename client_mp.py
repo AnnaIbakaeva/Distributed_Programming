@@ -8,7 +8,7 @@ class Client(object):
 	def __init__(self):
 		self.current_my_value = 0
 		self.my_data = []
-		self.received_data = 0
+		self.received_data = []
 		self.iteration_size = 0
 		self.iterations_count = 0
 		self.name = "Kate"
@@ -18,7 +18,7 @@ class Client(object):
 		
 		self.on_connect()
 		
-		self.calculate(100000, 10)
+		self.calculate(100000 / self.other.get_clients_count(), 10)
 		
 	def calculate(self, count, iterations):
 		iterCount = iterations
@@ -26,8 +26,9 @@ class Client(object):
 
 		self.other.update_data(iterCount, iterSize)
 
-		thread = threading.Thread(target=self.other.mass_start)
-		thread.start()
+		self.other.mass_start()
+		# thread = threading.Thread(target=self.other.mass_start)
+		# thread.start()
 		
 	def mass_start(self):
 		self.main()
@@ -35,16 +36,15 @@ class Client(object):
 	def main(self):
 		result = self.get_result()
 		print("Result pi = ", result)
-		
 
 	def get_result(self):
-		wait = 0
-		iterationsCount = self.iterations_count * (self.other.get_clients_count() + 1)# сколько всего вычислений
+		iterationsCount = self.iterations_count * self.other.get_clients_count() # сколько всего вычислений
 		alreadyCalc = self.is_all_over() # сколько уже сделано
-		
+
+		print("Before while, iterationsCount = ", iterationsCount, " alreadyCalc = ", alreadyCalc)
 		while alreadyCalc < iterationsCount:
-			aviable = self.other.get_active_clients_count() # сколько активных учатсникв
-			clients = self.other.get_clients_count() # сколько всего должно быть
+			# aviable = self.other.get_active_clients_count() # сколько активных учатсникв
+			# clients = self.other.get_clients_count() # сколько всего должно быть
 			doing = alreadyCalc + self.other.get_wait_me_clients_count() # сколько сделано на данный момент задач + сколько делаются в данный момент
 			if doing < iterationsCount: #// ??? // Если ктото упал  // и при этом есть свободные итерации
 				self.next_step()  # берем итерацию и делаем
@@ -54,26 +54,32 @@ class Client(object):
 		result = 0
 		for value in self.my_data:
 			result += value
+
+		for rec_result in self.received_data:
+			result += rec_result
+
+		count += len(self.received_data)
 			
-		
-			
-		for information in self.Informations:
-			for value in information.RecievedData:
-				result += value
-			dataCount = len(information.RecievedData)
-			count += dataCount
+		# for information in self.Informations:
+		# 	for value in information.RecievedData:
+		# 		result += value
+		# 	dataCount = len(information.RecievedData)
+		# 	count += dataCount
 
 		return float((result * 4) / count)
 		# return (float)((float)result * 4) / (float)count
 
 	def is_all_over(self):
-		# dataCount = len(self.my_data)
-		dataCount = self.other.get_received_data_count()
-		# Informations.ForEach(x => dataCount += x.RecievedData.Count);
+		dataCount = len(self.my_data)
+		dataCount += self.other.get_received_data_count()
 		return dataCount
 
-	def get_my_data_count(self):
-		return len(self.my_data)
+	def get_received_data_count(self):
+		print("len(self.received_data) ", len(self.received_data))
+		return len(self.received_data)
+
+	# def get_my_data_count(self):
+	# 	return len(self.my_data)
 		
 	def next_step(self):
 		# Сообщаем каждому, с кем есть связь, что мы считаем
@@ -121,23 +127,23 @@ class Client(object):
 		
 	
 	def update_information(self, value):
-		self.received_data = value
+		self.received_data.append(value)
 		
 	# Пересчитать нагрузку, которую будем считать
-	def update_iterations(self, unsolved):
-		current_active_clients = self.get_active_clients_count()
-		delta = ceil(float(unsolved / current_active_clients))
-		self.iterations_count += int(delta)
+	# def update_iterations(self, unsolved):
+	# 	current_active_clients = self.other.get_active_clients_count()
+	# 	delta = ceil(float(unsolved / current_active_clients))
+	# 	self.iterations_count += int(delta)
 		
-	def update_status(self, name):
-		try:
-			client = self.other_clients.index(name)
-			client.has_connection = False
-			
-			unsolved = self.iterations_count - inf.RecievedData.Count;
-			self.update_iterations(unsolved)
-		except:
-			print ("No client ", name)
+	# def update_status(self, name):
+	# 	try:
+	# 		client = self.other_clients.index(name)
+	# 		client.has_connection = False
+	#
+	# 		unsolved = self.iterations_count - inf.RecievedData.Count;
+	# 		self.update_iterations(unsolved)
+	# 	except:
+	# 		print ("No client ", name)
 
 	def disconnect(self):
 		if self.conn:
@@ -163,35 +169,11 @@ class Client(object):
 			self.conn = None
 			return
 		try:
-			self.other = self.conn.root.login(self.name, self.update_data, self.mass_start, self.get_my_data_count,
-											  self.get_wait, self.update_information)
+			self.other = self.conn.root.login(self.name, self.update_data, self.mass_start,
+											  self.get_wait, self.update_information, self.get_received_data_count)
 		except ValueError:
 			self.conn.close()
 			self.conn = None
 
-
-# class Information(object):
-# 	"""
-# 	Help informataion about other clients
-# 	"""
-# 	def __init__(self, name):
-# 		self.name = name
-# 		self.has_connection = True
-# 		self.received_informaion = []
-# 		self.wait_me = False
-		
-#public Information GetInformation(string address)
- #           {
-  #              return Informations.First(x => x.Address == address);
-   #         }
-		
-	
-		
-		
-		
-		
-	
-		
-	    
-		
-	
+if __name__ == "__main__":
+	cc = Client()
