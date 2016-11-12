@@ -14,10 +14,10 @@
   </component>
   <component name="ChangesViewManager" flattened_view="true" show_ignored="false" />
   <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/DistribitedProgramming$client_mp.coverage" NAME="client_mp Coverage Results" MODIFIED="1478935591304" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/DistribitedProgramming$server_mp.coverage" NAME="server_mp Coverage Results" MODIFIED="1478935588529" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/DistribitedProgramming$client_mp.coverage" NAME="client_mp Coverage Results" MODIFIED="1478939245375" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/DistribitedProgramming$server_mp.coverage" NAME="server_mp Coverage Results" MODIFIED="1478938848061" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/DistribitedProgramming$new_client.coverage" NAME="new_client Coverage Results" MODIFIED="1478174073274" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/DistribitedProgramming$client_mp2.coverage" NAME="client_mp2 Coverage Results" MODIFIED="1478933005498" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/DistribitedProgramming$client_mp2.coverage" NAME="client_mp2 Coverage Results" MODIFIED="1478938859376" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/DistribitedProgramming$new_client2.coverage" NAME="new_client2 Coverage Results" MODIFIED="1478174075953" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/DistribitedProgramming$test.coverage" NAME="test Coverage Results" MODIFIED="1477930874812" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/DistribitedProgramming$server3.coverage" NAME="server3 Coverage Results" MODIFIED="1477136888454" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
@@ -44,21 +44,24 @@
         <entry file="file://$PROJECT_DIR$/server_mp.py">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="84" column="60" selection-start-line="84" selection-start-column="60" selection-end-line="84" selection-end-column="60" />
+              <caret line="122" column="0" selection-start-line="122" selection-start-column="0" selection-end-line="122" selection-end-column="0" />
               <folding>
                 <element signature="e#0#37#0" expanded="true" />
-                <element signature="e#819#1173#0" expanded="false" />
-                <element signature="e#1218#1308#0" expanded="false" />
-                <element signature="e#1366#1531#0" expanded="false" />
-                <element signature="e#1591#1857#0" expanded="false" />
-                <element signature="e#1901#2054#0" expanded="false" />
-                <element signature="e#2100#2353#0" expanded="false" />
-                <element signature="e#2983#3156#0" expanded="false" />
-                <element signature="e#3215#3583#0" expanded="false" />
-                <element signature="e#3642#3817#0" expanded="false" />
-                <element signature="e#3878#4270#0" expanded="false" />
-                <element signature="e#4328#4449#0" expanded="false" />
-                <element signature="e#4500#4519#0" expanded="false" />
+                <element signature="e#320#805#0" expanded="false" />
+                <element signature="e#845#1199#0" expanded="false" />
+                <element signature="e#1244#1334#0" expanded="false" />
+                <element signature="e#1392#1557#0" expanded="false" />
+                <element signature="e#1617#1943#0" expanded="false" />
+                <element signature="e#1987#2140#0" expanded="false" />
+                <element signature="e#2186#2501#0" expanded="false" />
+                <element signature="e#2560#2726#0" expanded="false" />
+                <element signature="e#2787#3136#0" expanded="false" />
+                <element signature="e#3193#3366#0" expanded="false" />
+                <element signature="e#3425#3855#0" expanded="false" />
+                <element signature="e#3914#4089#0" expanded="false" />
+                <element signature="e#4150#4583#0" expanded="false" />
+                <element signature="e#4641#4762#0" expanded="false" />
+                <element signature="e#4813#4832#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -67,8 +70,8 @@
       <file leaf-file-name="client_mp.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/client_mp.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.2800659">
-              <caret line="10" column="25" selection-start-line="10" selection-start-column="25" selection-end-line="10" selection-end-column="25" />
+            <state vertical-scroll-proportion="6.509494">
+              <caret line="121" column="0" selection-start-line="121" selection-start-column="0" selection-end-line="121" selection-end-column="0" />
               <folding>
                 <element signature="e#15#26#0" expanded="true" />
               </folding>
@@ -80,15 +83,9 @@
         <entry file="file://$PROJECT_DIR$/client_mp2.py">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="14" />
+              <caret line="114" column="46" selection-start-line="114" selection-start-column="46" selection-end-line="114" selection-end-column="46" />
               <folding>
                 <element signature="e#15#26#0" expanded="true" />
-                <element signature="e#1965#2065#0" expanded="false" />
-                <element signature="e#2105#2196#0" expanded="false" />
-                <element signature="e#2284#2636#0" expanded="false" />
-                <element signature="e#2661#2719#0" expanded="false" />
-                <element signature="e#3434#3657#0" expanded="false" />
-                <element signature="e#3699#3731#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -124,8 +121,8 @@
         <option value="$PROJECT_DIR$/client2.py" />
         <option value="$PROJECT_DIR$/client.py" />
         <option value="$PROJECT_DIR$/client_mp2.py" />
-        <option value="$PROJECT_DIR$/server_mp.py" />
         <option value="$PROJECT_DIR$/client_mp.py" />
+        <option value="$PROJECT_DIR$/server_mp.py" />
       </list>
     </option>
   </component>
@@ -502,8 +499,8 @@
     <recent_temporary>
       <list size="5">
         <item index="0" class="java.lang.String" itemvalue="Python.client_mp" />
-        <item index="1" class="java.lang.String" itemvalue="Python.server_mp" />
-        <item index="2" class="java.lang.String" itemvalue="Python.client_mp2" />
+        <item index="1" class="java.lang.String" itemvalue="Python.client_mp2" />
+        <item index="2" class="java.lang.String" itemvalue="Python.server_mp" />
         <item index="3" class="java.lang.String" itemvalue="Python.client" />
         <item index="4" class="java.lang.String" itemvalue="Python.client2" />
       </list>
@@ -533,7 +530,7 @@
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4488189" sideWeight="0.4919473" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.45826772" sideWeight="0.4919473" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
@@ -1105,12 +1102,19 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.44810542">
+          <caret line="16" column="0" selection-start-line="16" selection-start-column="0" selection-end-line="18" selection-end-column="10" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/client.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="204" column="0" selection-start-line="204" selection-start-column="0" selection-end-line="205" selection-end-column="17" />
+        <state vertical-scroll-proportion="0.028006589">
+          <caret line="1" column="0" selection-start-line="1" selection-start-column="0" selection-end-line="1" selection-end-column="25" />
           <folding>
-            <element signature="e#0#11#0" expanded="true" />
             <element signature="e#815#1048#0" expanded="false" />
             <element signature="e#1082#1126#0" expanded="false" />
             <element signature="e#1162#1585#0" expanded="false" />
@@ -1120,26 +1124,12 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/test.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.44810542">
-          <caret line="16" column="0" selection-start-line="16" selection-start-column="0" selection-end-line="18" selection-end-column="10" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/client_mp2.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="14" />
+          <caret line="114" column="46" selection-start-line="114" selection-start-column="46" selection-end-line="114" selection-end-column="46" />
           <folding>
             <element signature="e#15#26#0" expanded="true" />
-            <element signature="e#1965#2065#0" expanded="false" />
-            <element signature="e#2105#2196#0" expanded="false" />
-            <element signature="e#2284#2636#0" expanded="false" />
-            <element signature="e#2661#2719#0" expanded="false" />
-            <element signature="e#3434#3657#0" expanded="false" />
-            <element signature="e#3699#3731#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1147,29 +1137,32 @@
     <entry file="file://$PROJECT_DIR$/server_mp.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="84" column="60" selection-start-line="84" selection-start-column="60" selection-end-line="84" selection-end-column="60" />
+          <caret line="122" column="0" selection-start-line="122" selection-start-column="0" selection-end-line="122" selection-end-column="0" />
           <folding>
             <element signature="e#0#37#0" expanded="true" />
-            <element signature="e#819#1173#0" expanded="false" />
-            <element signature="e#1218#1308#0" expanded="false" />
-            <element signature="e#1366#1531#0" expanded="false" />
-            <element signature="e#1591#1857#0" expanded="false" />
-            <element signature="e#1901#2054#0" expanded="false" />
-            <element signature="e#2100#2353#0" expanded="false" />
-            <element signature="e#2983#3156#0" expanded="false" />
-            <element signature="e#3215#3583#0" expanded="false" />
-            <element signature="e#3642#3817#0" expanded="false" />
-            <element signature="e#3878#4270#0" expanded="false" />
-            <element signature="e#4328#4449#0" expanded="false" />
-            <element signature="e#4500#4519#0" expanded="false" />
+            <element signature="e#320#805#0" expanded="false" />
+            <element signature="e#845#1199#0" expanded="false" />
+            <element signature="e#1244#1334#0" expanded="false" />
+            <element signature="e#1392#1557#0" expanded="false" />
+            <element signature="e#1617#1943#0" expanded="false" />
+            <element signature="e#1987#2140#0" expanded="false" />
+            <element signature="e#2186#2501#0" expanded="false" />
+            <element signature="e#2560#2726#0" expanded="false" />
+            <element signature="e#2787#3136#0" expanded="false" />
+            <element signature="e#3193#3366#0" expanded="false" />
+            <element signature="e#3425#3855#0" expanded="false" />
+            <element signature="e#3914#4089#0" expanded="false" />
+            <element signature="e#4150#4583#0" expanded="false" />
+            <element signature="e#4641#4762#0" expanded="false" />
+            <element signature="e#4813#4832#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/client_mp.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.2800659">
-          <caret line="10" column="25" selection-start-line="10" selection-start-column="25" selection-end-line="10" selection-end-column="25" />
+        <state vertical-scroll-proportion="6.509494">
+          <caret line="121" column="0" selection-start-line="121" selection-start-column="0" selection-end-line="121" selection-end-column="0" />
           <folding>
             <element signature="e#15#26#0" expanded="true" />
           </folding>

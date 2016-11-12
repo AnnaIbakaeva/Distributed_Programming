@@ -1,6 +1,7 @@
 from __future__ import with_statement
 from rpyc import Service, async
 from rpyc.utils.server import ThreadedServer
+from copy import deepcopy
 
 
 clients = []
@@ -52,6 +53,8 @@ class ClientToken(object):
     def broadcast_update_data(self, count, size):
         for client in clients:
             try:
+                if client.stale:
+                    return
                 client.callback_update_data(count, size)
             except:
                 print("EXCEPTION broadcast_update_data ", client.name)
@@ -67,6 +70,8 @@ class ClientToken(object):
     def broadcast_mass_start(self):
         for client in clients:
             try:
+                if client.stale:
+                    continue
                 client.callback_mass_start()
             except:
                 print("EXCEPTION broadcast_mass_start ", client.name)
@@ -82,9 +87,11 @@ class ClientToken(object):
     def broadcast_update_information(self, value):
         for client in clients:
             try:
-                client.callback_update_information(client.name, value)
+                if client.stale:
+                    continue
+                client.callback_update_information(self.name, value)
             except:
-                print("EXCEPTION broadcast_update_information ", client.name)
+                print("\nEXCEPTION broadcast_update_information ", client.name)
                 client.stale = True
                 self.update_client_stale()
 
@@ -98,6 +105,8 @@ class ClientToken(object):
         count = 0
         for client in clients:
             try:
+                if client.stale:
+                    continue
                 count += client.callback_get_received_data_count().value
             except Exception:
                 print("EXCEPTION broadcast_get_received_data_count ", client.name)
@@ -116,7 +125,9 @@ class ClientToken(object):
         count = 0
         for client in clients:
             try:
-                if not client.stale and client.callback_get_wait().value:
+                if client.stale:
+                    continue
+                if client.callback_get_wait().value:
                     count += 1
             except:
                 print("EXCEPTION broadcast_get_wait_me_clients_count ", client.name)

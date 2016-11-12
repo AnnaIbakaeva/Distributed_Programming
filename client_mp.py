@@ -18,16 +18,16 @@ class Client(object):
         self.wait_me = False
 
         self.on_connect()
-        self.calculate(1000000 / self.other.get_clients_count(), 10)
+        self.calculate(10000000 / 2, 10)
 
     def calculate(self, count, iterations):
         iterCount = iterations
         iterSize = int(count / iterCount)
         print("iterCount, iterSize: ", iterCount, iterSize)
 
-        self.other.update_data(iterCount, iterSize)
+        self.update_data(iterCount, iterSize)
 
-        self.other.mass_start()
+        self.mass_start()
 
     def mass_start(self):
         self.main()
@@ -37,7 +37,7 @@ class Client(object):
         print("\nResult pi = ", result)
 
     def get_result(self):
-        iterationsCount = self.iterations_count * self.other.get_clients_count() # сколько всего вычислений
+        iterationsCount = self.iterations_count * 2 # сколько всего вычислений
         alreadyCalc = self.is_all_over() # сколько уже сделано
 
         print("\nBefore while, iterationsCount = ", iterationsCount, " alreadyCalc = ", alreadyCalc)
@@ -119,22 +119,6 @@ class Client(object):
             return
         print("Update inforemation ", value)
         self.received_data.append(value)
-		
-    # Пересчитать нагрузку, которую будем считать
-    # def update_iterations(self, unsolved):
-    # 	current_active_clients = self.other.get_active_clients_count()
-    # 	delta = ceil(float(unsolved / current_active_clients))
-    # 	self.iterations_count += int(delta)
-		
-    # def update_status(self, name):
-    # 	try:
-    # 		client = self.other_clients.index(name)
-    # 		client.has_connection = False
-    #
-    # 		unsolved = self.iterations_count - inf.RecievedData.Count;
-    # 		self.update_iterations(unsolved)
-    # 	except:
-    # 		print ("No client ", name)
 
     def disconnect(self):
         if self.conn:
