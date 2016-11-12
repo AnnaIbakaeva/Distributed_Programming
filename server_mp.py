@@ -38,13 +38,13 @@ class ClientToken(object):
         self.callback_send_pi = None
         self.callback_update_data = None
         #clients.remove(self)
-		self.update_client_stale()
-        print("* Goodbye %s *" % (self.name,))
-		
-	def update_client_stale(self):
-	    for c in clients:
-		    if c.name == self.name:
-			    c.stale = self.stale
+        self.update_client_stale()
+        print("* Goodbye %s *" % (self.name))
+
+    def update_client_stale(self):
+        for c in clients:
+            if c.name == self.name:
+                c.stale = self.stale
 
     def broadcast_send_pi(self, name, pi, curIter):
         for client in clients:
@@ -69,6 +69,9 @@ class ClientToken(object):
                 count += 1
         return count
 
+    def exposed_get_clients_count(self):
+        return len(clients)
+
     def exposed_get_rank(self):
         i = 0
         for client in clients:
@@ -76,6 +79,19 @@ class ClientToken(object):
                 return i
             i += 1
         raise ValueError("CLIENT NOT FOUND")
+
+    def exposed_get_received_data_count(self):
+        count = 0
+        for client in clients:
+            count += client.callback_get_received_data_count()
+        return count
+
+    def exposed_get_wait_me_clients_count(self):
+        count = 0
+        for client in clients:
+            if not client.stale and client.callback_is_waiting():
+                count += 1
+        return count
 
 
 class RegisterService(Service):
