@@ -5,10 +5,7 @@ from copy import deepcopy
 
 
 clients = []
-servers = []
 my_port = 19913
-ports = [19911, 19912, 19913, 19914]
-
 
 class ClientToken(object):
     def __init__(self, name, update_data, mass_start, get_wait, update_information,
@@ -27,25 +24,6 @@ class ClientToken(object):
         print("\nAll clients:")
         for c in clients:
             print(c.name)
-
-        self.init_servers()
-
-        # print("\nAll servers")
-        # for s in servers:
-        #     print(s.name)
-
-    def init_servers(self):
-        for port in ports:
-            if port == my_port:
-                continue
-            try:
-                conn = connect("localhost", port)
-                other_server = conn.root.login(self.name, self.callback_update_data, self.callback_mass_start,
-                                                         self.callback_get_wait, self.callback_update_information,
-                                                         self.callback_get_received_data_count)
-                # servers.append(other_server)
-            except:
-                print("Exception init_servers ", port)
 
     def exposed_logout(self):
         if self.stale:

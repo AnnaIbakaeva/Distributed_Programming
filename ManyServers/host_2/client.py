@@ -6,6 +6,12 @@ import threading
 import time
 
 
+class Information(object):
+    def __init__(self, name):
+        self.name = name
+        self.received_data = []
+
+
 class Client(object):
     def __init__(self):
         self.current_my_value = 0
@@ -14,10 +20,12 @@ class Client(object):
         self.iteration_size = 0
         self.iterations_count = 0
         self.name = "Ann"
-        self.other = None
-        self.conn = None
+        self.others = []
+        self.conns = []
         self.wait_me = False
         self.alreadyCalc = 0
+        self.ports = [19911, 19912, 19913, 19914]
+        self.informations = []
 
         self.on_connect()
         self.calculate(100000000 / 4, 10)
@@ -33,10 +41,10 @@ class Client(object):
         self.mass_start()
 
     def mass_start(self):
-        t1 = threading.Thread(target=self.main)
-        t1.start()
-        t1.join()
-        # self.main()
+        self.main()
+        # t1 = threading.Thread(target=self.main)
+        # t1.start()
+        # t1.join()
 
     def main(self):
         time.clock()
@@ -49,7 +57,7 @@ class Client(object):
         self.alreadyCalc = self.is_all_over() # сколько уже сделано
 
         while self.alreadyCalc < iterationsCount:
-            w = self.other.get_wait_me_clients_count()
+            w = self.server_get_wait_me_clients_count()
             # print("\nWait me = ", w)
             doing = self.alreadyCalc + w# сколько сделано на данный момент задач + сколько делаются в данный момент
             print("\nВ работе ", doing)
@@ -61,11 +69,11 @@ class Client(object):
             self.alreadyCalc = self.is_all_over() # обновляем общее значение сделанных итераций
             print("Посчитано ", self.alreadyCalc)
 
-        while self.other.get_wait_me_clients_count() > 0:
+        while self.server_get_wait_me_clients_count() > 0:
             time.sleep(0.5)
 
         count = len(self.my_data)
-        print("Я посчитал ", count)
+        print("\nЯ посчитал ", count)
         result = 0
         for value in self.my_data:
             result += value
@@ -92,18 +100,18 @@ class Client(object):
 
     def next_step(self):
         # Сообщаем каждому, с кем есть связь, что мы считаем
-        self.other.wait_me(True)
+        self.server_wait_me(True)
 
         self.make_iteration() #// Считаем один блок
 
         self.alreadyCalc = self.is_all_over()
-        if self.alreadyCalc < self.iterations_count * 4:
+        # if self.alreadyCalc < self.iterations_count * 4:
             # рассылаем всем посчитаный блок
-            self.other.update_information(self.my_data[len(self.my_data) - 1])
-        else:
-            print("\nI not send the data!\n")
-            self.my_data.pop()
-        self.other.wait_me(False)
+        self.server_update_information(self.my_data[len(self.my_data) - 1])
+        # else:
+        #     print("\nI not send the data!\n")
+        #     self.my_data.pop()
+        self.server_wait_me(False)
 
     def get_wait(self):
         return self.wait_me
@@ -138,37 +146,86 @@ class Client(object):
     def update_information(self, name, value):
         if name == self.name:
             return
-        print("\nUpdate information ", value)
+
+        info_exist = False
+        for info in self.informations:
+            if info.name == name:
+                info_exist = True
+        if not info_exist:
+            info = Information(name)
+            info.received_data.append(value)
+            self.informations.append(info)
+        else:
+            for info in self.informations:
+                if info.name == name:
+                    if info.received_data[len(info.received_data)-1] == value:
+                        return
+                    else:
+                        info.received_data.append(value)
+
+        print("\nUpdate information ", value, " from ", name)
         self.received_data.append(value)
         self.alreadyCalc = self.is_all_over()
 
-    def disconnect(self):
-        if self.conn:
+    def server_get_wait_me_clients_count(self):
+        count = 0
+        for other in self.others:
             try:
-                self.other.logout()
+                count = other.get_wait_me_clients_count()
             except:
-                print("Logout except")
-            self.conn.close()
-            self.other = None
-            self.conn = None
+                print("Exception get wait me ", other.name)
+        return count
+
+    def server_wait_me(self, value):
+        for other in self.others:
+            try:
+                other.wait_me(value)
+            except:
+                print("Exception set wait me ", other.name)
+
+    def server_update_information(self, value):
+        for c in self.conns:
+            try:
+                c.ping(timeout=1)
+            except:
+                index = self.conns.index(c)
+                self.conns.pop(index)
+                self.others.pop(index)
+
+        for other in self.others:
+            try:
+                other.update_information(value)
+            except:
+                print("Exception update information ", other.name)
+
+    def disconnect(self):
+        for other in self.others:
+            try:
+                other.logout()
+            except:
+                print("Logout except ", other.name)
+        for conn in self.conns:
+            try:
+                conn.close()
+            except:
+                print("Connection close except")
+        self.others = []
+        self.conns = []
 
     def on_close(self):
         print("I closed!")
         self.disconnect()
 
     def on_connect(self):
-        try:
-            self.conn = rpyc.connect("localhost", 19912)
-        except Exception:
-            print("\nEXCEPTION!!!\n")
-            self.conn = None
-            return
-        try:
-            self.other = self.conn.root.login(self.name, self.update_data, self.mass_start,
-											  self.get_wait, self.update_information, self.get_received_data_count)
-        except ValueError:
-            self.conn.close()
-            self.conn = None
+        for port in self.ports:
+            try:
+                conn = rpyc.connect("localhost", port)
+                other = conn.root.login(self.name, self.update_data, self.mass_start,
+                                                  self.get_wait, self.update_information, self.get_received_data_count)
+                self.conns.append(conn)
+                self.others.append(other)
+            except:
+                print("\nEXCEPTION! ", port)
 
 if __name__ == "__main__":
     cc = Client()
