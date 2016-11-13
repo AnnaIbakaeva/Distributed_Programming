@@ -5,7 +5,7 @@ from copy import deepcopy
 
 
 clients = []
-servers = []
+# servers = []
 my_port = 19912
 ports = [19911, 19912, 19913, 19914]
 
@@ -23,11 +23,17 @@ class ClientToken(object):
         self.callback_get_received_data_count = get_received_data_count
         print("* Hello %s *" % self.name)
         clients.append(self)
+        self.servers = []
 
-        print("")
-        print("All clients:")
+        print("\nAll clients:")
         for c in clients:
             print(c.name)
+
+        self.init_servers()
+
+        # print("\nAll servers")
+        # for s in servers:
+        #     print(s.name)
 
     def init_servers(self):
         for port in ports:
@@ -38,7 +44,7 @@ class ClientToken(object):
                 other_server = conn.root.login(self.name, self.callback_update_data, self.callback_mass_start,
                                                          self.callback_get_wait, self.callback_update_information,
                                                          self.callback_get_received_data_count)
-                servers.append(other_server)
+                self.servers.append(other_server)
             except:
                 print("Exception init_servers ", port)
 
@@ -176,6 +182,9 @@ class RegisterService(Service):
                       get_received_data_count):
         if self.client and not self.client.stale:
             raise ValueError("already logged in")
+        for client in clients:
+            if client.name == username:
+                return client
         else:
             self.client = ClientToken(username, async(update_data), async(mass_start),
                                       get_wait, async(update_information), async(get_received_data_count))

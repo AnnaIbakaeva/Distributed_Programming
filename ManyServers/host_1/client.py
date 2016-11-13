@@ -138,7 +138,7 @@ class Client(object):
     def update_information(self, name, value):
         if name == self.name:
             return
-        # print("\nUpdate information ", value)
+        print("\nUpdate information ", value)
         self.received_data.append(value)
         self.alreadyCalc = self.is_all_over()
 
@@ -158,7 +158,7 @@ class Client(object):
 
     def on_connect(self):
         try:
-            self.conn = rpyc.connect("localhost", 19912)
+            self.conn = rpyc.connect("localhost", 19911)
         except Exception:
             print("\nEXCEPTION!!!\n")
             self.conn = None

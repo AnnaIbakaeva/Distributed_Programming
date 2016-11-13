@@ -138,7 +138,7 @@ class Client(object):
     def update_information(self, name, value):
         if name == self.name:
             return
-        # print("\nUpdate information ", value)
+        print("\nUpdate information ", value)
         self.received_data.append(value)
         self.alreadyCalc = self.is_all_over()
 
