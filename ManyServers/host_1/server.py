@@ -1,11 +1,13 @@
 from __future__ import with_statement
-from rpyc import Service, async
+from rpyc import Service, async, connect
 from rpyc.utils.server import ThreadedServer
 from copy import deepcopy
 
 
 clients = []
-servers = [19911, 19912, 19913, 19914]
+servers = []
+my_port = 19911
+ports = [19911, 19912, 19913, 19914]
 
 
 class ClientToken(object):
@@ -26,6 +28,19 @@ class ClientToken(object):
         print("All clients:")
         for c in clients:
             print(c.name)
+
+    def init_servers(self):
+        for port in ports:
+            if port == my_port:
+                continue
+            try:
+                conn = connect("localhost", port)
+                other_server = conn.root.login(self.name, self.callback_update_data, self.callback_mass_start,
+                                                         self.callback_get_wait, self.callback_update_information,
+                                                         self.callback_get_received_data_count)
+                servers.append(other_server)
+            except:
+                print("Exception init_servers ", port)
 
     def exposed_logout(self):
         if self.stale:
@@ -168,6 +183,6 @@ class RegisterService(Service):
 
 
 if __name__ == "__main__":
-    t = ThreadedServer(RegisterService, port=19912)
+    t = ThreadedServer(RegisterService, port=my_port)
     t.start()
 
