@@ -12,6 +12,7 @@ class ClientToken(object):
                  get_received_data_count):
         self.name = name
         self.stale = False
+        self.wait_me = False
         self.callback_update_data = update_data
         self.callback_mass_start = mass_start
         self.callback_get_wait = get_wait
@@ -119,22 +120,38 @@ class ClientToken(object):
         if self.stale:
             self.update_client_stale()
             raise ValueError("User token is stale ", self.name)
-        return self.broadcast_get_wait_me_clients_count()
 
-    def broadcast_get_wait_me_clients_count(self):
         count = 0
         for client in clients:
-            try:
-                if client.stale:
-                    continue
-                if client.callback_get_wait():
-                    count += 1
-            except:
-                print("EXCEPTION broadcast_get_wait_me_clients_count ", client.name)
-                client.stale = True
-                self.update_client_stale()
+            if client.stale:
                 continue
+            if client.wait_me:
+                count += 1
         return count
+        # return self.broadcast_get_wait_me_clients_count()
+
+    # def broadcast_get_wait_me_clients_count(self):
+    #     count = 0
+    #     for client in clients:
+    #         try:
+    #             if client.stale:
+    #                 continue
+    #             if client.callback_get_wait():
+    #                 count += 1
+    #         except:
+    #             print("EXCEPTION broadcast_get_wait_me_clients_count ", client.name)
+    #             client.stale = True
+    #             self.update_client_stale()
+    #             continue
+    #     return count
+
+    def exposed_wait_me(self, value):
+        try:
+            for client in clients:
+                if client.name == self.name:
+                    client.wait_me = value
+        except:
+            print("EXCEPTION exposed_wait_me ")
 
     def exposed_get_active_clients_count(self):
         count = 0

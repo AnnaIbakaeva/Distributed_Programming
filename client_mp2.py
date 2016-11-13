@@ -25,7 +25,8 @@ class Client(object):
     def calculate(self, count, iterations):
         iterCount = iterations
         iterSize = int(count / iterCount)
-        print("iterCount, iterSize: ", iterCount, iterSize)
+        print("Общее количество итераций = ", iterCount * 4)
+        print("Количество итераций в одном шаге = ", iterSize)
 
         self.update_data(iterCount, iterSize)
 
@@ -38,29 +39,33 @@ class Client(object):
         # self.main()
 
     def main(self):
+        time.clock()
         result = self.get_result()
-        print("\nResult pi = ", result)
+        print("\nРезультат = ", result)
+        print("Время счета ", time.clock())
 
     def get_result(self):
         iterationsCount = self.iterations_count * 4 # сколько всего вычислений
         self.alreadyCalc = self.is_all_over() # сколько уже сделано
 
-        print("\nBefore while, iterationsCount = ", iterationsCount, " alreadyCalc = ", self.alreadyCalc)
         while self.alreadyCalc < iterationsCount:
-            doing = self.alreadyCalc + self.other.get_wait_me_clients_count()# сколько сделано на данный момент задач + сколько делаются в данный момент
-            print("\ndoing ", doing)
+            w = self.other.get_wait_me_clients_count()
+            # print("\nWait me = ", w)
+            doing = self.alreadyCalc + w# сколько сделано на данный момент задач + сколько делаются в данный момент
+            print("\nВ работе ", doing)
             if doing < iterationsCount: #// ??? // Если ктото упал  // и при этом есть свободные итерации
                 self.next_step()  # берем итерацию и делаем
             else:
-                print("\nI end calculate")
+                print("\nЯ закончил счет")
                 break
             self.alreadyCalc = self.is_all_over() # обновляем общее значение сделанных итераций
-            print("alreadyCalc ", self.alreadyCalc)
+            print("Посчитано ", self.alreadyCalc)
 
         while self.other.get_wait_me_clients_count() > 0:
             time.sleep(0.5)
 
         count = len(self.my_data)
+        print("Я посчитал ", count)
         result = 0
         for value in self.my_data:
             result += value
@@ -70,24 +75,24 @@ class Client(object):
 
         count += len(self.received_data)
 
-        print("\ncount = ", count)
-        print("Pre-result = ", result)
+        print("\nОбщее количество = ", count)
+        # print("Pre-result = ", result)
         return float((result * 4) / count)
 
     def is_all_over(self):
         dataCount = len(self.my_data)
-        print("My data count = ", dataCount)
+        # print("My data count = ", dataCount)
         dataCount += self.get_received_data_count()
-        print("Sum data count = ", dataCount)
+        # print("Sum data count = ", dataCount)
         return dataCount
 
     def get_received_data_count(self):
-        print("len(self.received_data) ", len(self.received_data))
+        # print("len(self.received_data) ", len(self.received_data))
         return len(self.received_data)
 
     def next_step(self):
         # Сообщаем каждому, с кем есть связь, что мы считаем
-        self.wait_me = True
+        self.other.wait_me(True)
 
         self.make_iteration() #// Считаем один блок
 
@@ -98,7 +103,7 @@ class Client(object):
         else:
             print("\nI not send the data!\n")
             self.my_data.pop()
-        self.wait_me = False
+        self.other.wait_me(False)
 
     def get_wait(self):
         return self.wait_me
@@ -108,7 +113,7 @@ class Client(object):
         for i in range(0, int(self.iteration_size)):
             self.current_my_value += self.is_enter()
         data = float(self.current_my_value/self.iteration_size)
-        print("data = ", data)
+        # print("data = ", data)
         self.my_data.append(data)
 
     def is_enter(self):
@@ -124,7 +129,7 @@ class Client(object):
         return 0
 
     def update_data(self, count, size):
-        print("\nupdate_data ", count, size)
+        # print("\nupdate_data ", count, size)
         self.my_data = []
         self.iterations_count = count
         self.iteration_size = size
@@ -133,7 +138,7 @@ class Client(object):
     def update_information(self, name, value):
         if name == self.name:
             return
-        print("\nUpdate inforemation ", value)
+        # print("\nUpdate information ", value)
         self.received_data.append(value)
         self.alreadyCalc = self.is_all_over()
 
