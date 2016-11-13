@@ -184,19 +184,24 @@ class Client(object):
                 print("Exception set wait me ", other.name)
 
     def server_update_information(self, value):
+        self.check_connect(value)
+        for other in self.others:
+            try:
+                self.check_connect(value, other)
+            except:
+                print("Exception update information ", other.name)
+
+    def check_connect(self, value, other=None):
         for c in self.conns:
             try:
                 c.ping(timeout=1)
+                if not other == None:
+                    other.update_information(value)
             except:
                 index = self.conns.index(c)
                 self.conns.pop(index)
                 self.others.pop(index)
-
-        for other in self.others:
-            try:
-                other.update_information(value)
-            except:
-                print("Exception update information ", other.name)
+                print("\nException check_connect\n Я удалил из списка соединений индекс ", index)
 
     def disconnect(self):
         for other in self.others:
