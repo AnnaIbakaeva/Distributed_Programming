@@ -163,7 +163,7 @@ class Client(object):
                     else:
                         info.received_data.append(value)
 
-        print("\nUpdate information ", value, " from ", name)
+        print("\nЯ получил ", value, " от ", name)
         self.received_data.append(value)
         self.alreadyCalc = self.is_all_over()
 
@@ -201,7 +201,7 @@ class Client(object):
                 index = self.conns.index(c)
                 self.conns.pop(index)
                 self.others.pop(index)
-                print("\nException check_connect\n Я удалил из списка соединений индекс ", index)
+                print("\nЯ удалил из списка соединений индекс ", index)
 
     def disconnect(self):
         for other in self.others:
